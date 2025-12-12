@@ -1,8 +1,10 @@
+import Calculator from "./components/Calculator";
+
 function App() {
   return (
-    <>
-      <div className="text-4xl">Hoge</div>
-    </>
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+      <Calculator />
+    </div>
   );
 }
 
