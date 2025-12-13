@@ -2,22 +2,67 @@ import Display from "./Display";
 import Button from "./Button";
 import { useState } from "react";
 
+// 演算子定数
+const OPERATOR = ["+", "-", "*", "÷", "%"];
+// 数字
+const NUMBER = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+// Function
+const FUNCTION = ["AC", "C", "⌫"];
+
+/**
+ * 電卓から入力された文字列に応じて、演算子 or 数字 or Functionかを返す
+ * @param input 入力された文字列
+ * @return string 固定の文字列を返す
+ */
+const categorizeInputType = (input: string): string => {
+  if (OPERATOR.includes(input)) {
+    return "operator";
+  } else if (NUMBER.includes(input)) {
+    return "number";
+  } else if (FUNCTION.includes(input)) {
+    return "function";
+  } else {
+    return "unknown";
+  }
+};
+
 function Calculator() {
-  const [value, setValue] = useState<string>("0");
+  // 数字
+  const [number, setNumber] = useState<string>("0");
+  // 前の数字
+  const [prevNumber, setPrevNumber] = useState<string>("");
+  // 演算子
+  const [operator, setOperator] = useState<string>("");
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const input = e.currentTarget.value;
-    setValue((prev) => {
-      if (prev === "0") {
-        return input;
-      }
-      return prev + input;
-    });
+
+    // inputのtypeに応じて操作を分けたい
+    // 数字であるならばsetNumberを使って処理をする
+    // 演算子であるならそれを保存する
+    const category = categorizeInputType(input);
+    switch (category) {
+      case "operator":
+        setOperator(input);
+        setPrevNumber(number);
+        setNumber("0");
+        break;
+      case "number":
+        setNumber((prev) => {
+          if (prev === "0") {
+            return input;
+          }
+          return prev + input;
+        });
+        break;
+      default:
+        console.error("unsupported Input");
+    }
   };
 
   return (
     <div className="w-full max-w-md mx-auto bg-gray-900 rounded-lg shadow-2xl overflow-hidden">
-      <Display value={value} />
+      <Display value={number} />
 
       <div className="p-4 grid grid-cols-4 gap-3">
         {/* 1行目: AC, C, ⌫, ÷ */}
