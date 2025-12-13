@@ -1,7 +1,7 @@
 interface ButtonProps {
   label: string;
   value: string;
-  onClick?: (value: string) => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
   type?: "number" | "operator" | "function" | "equals";
 }
@@ -25,7 +25,8 @@ function Button({
 
   return (
     <button
-      onClick={() => onClick?.(value)}
+      value={value}
+      onClick={onClick}
       className={`${baseStyles} ${typeStyles[type]} ${className}`}
     >
       {label}
