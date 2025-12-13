@@ -1,70 +1,7 @@
 import Display from "./Display";
 import Button from "./Button";
 import { useState } from "react";
-
-// 演算子定数
-const OPERATOR = ["+", "-", "*", "÷", "%", "="];
-// 数字
-const NUMBER = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-// Function
-const FUNCTION = ["AC", "C", "⌫"];
-
-/**
- * 電卓から入力された文字列に応じて、演算子 or 数字 or Functionかを返す
- * @param input 入力された文字列
- * @return string 固定の文字列を返す
- */
-const categorizeInputType = (input: string): string => {
-  if (OPERATOR.includes(input)) {
-    return "operator";
-  } else if (NUMBER.includes(input)) {
-    return "number";
-  } else if (FUNCTION.includes(input)) {
-    return "function";
-  } else {
-    return "unknown";
-  }
-};
-
-/**
- * 二項演算用
- * @param number
- * @param number
- * @param string operator
- * @returns number
- */
-const binaryOperate = (
-  left: number,
-  right: number,
-  operator: string
-): number => {
-  switch (operator) {
-    case "+":
-      return left + right;
-    case "-":
-      return left - right;
-    case "x":
-      return left * right;
-    case "÷":
-      return left / right;
-    default:
-      throw new Error(`Unsupported operator: ${operator}`);
-  }
-};
-
-/**
- * 単項演算
- * @param number
- * @returns number
- */
-const unaryOperate = (value: number, operator: string): number => {
-  switch (operator) {
-    case "%":
-      return value / 100;
-    default:
-      throw new Error(`Unsupported operator: ${operator}`);
-  }
-};
+import { categorizeInputType } from "../lib/utils";
 
 function Calculator() {
   // 数字
@@ -76,30 +13,11 @@ function Calculator() {
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const input = e.currentTarget.value;
-
-    // inputのtypeに応じて操作を分けたい
-    // 数字であるならばsetNumberを使って処理をする
-    // 演算子であるならそれを保存する
-
-    // 1 =>
     const category = categorizeInputType(input);
+
     switch (category) {
-      case "operator":
-        // 前の状態に参照するために setStateの中で
-        setOperator((prev) => {
-          if (input === "=") {
-            const current = Number(number);
-            const prevNum = Number(prevNumber);
-            const result = calculateNum(current, prevNum, input);
-            setNumber(String(result));
-            setPrevNumber(String(result));
-          }
-          setPrevNumber(number);
-          setNumber("0");
-          return input;
-        });
-        break;
       case "number":
+        // 数字の場合
         setNumber((prev) => {
           if (prev === "0") {
             return input;
@@ -107,8 +25,17 @@ function Calculator() {
           return prev + input;
         });
         break;
+      case "operator":
+        // 演算子の場合
+        break;
+      case "function":
+        // Functionの場合
+        break;
+      case "equals":
+        // 等号の場合
+        break;
       default:
-        console.error("unsupported Input");
+      // ここには到達しない。その前にthrowされている
     }
   };
 

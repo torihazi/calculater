@@ -55,6 +55,6 @@ export const categorizeInputType = (input: string): string => {
   } else if (FUNCTION.includes(input)) {
     return "function";
   } else {
-    return "unknown";
+    throw new Error(`Unsupported input: ${input}`);
   }
 };
