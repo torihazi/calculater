@@ -32,31 +32,31 @@ function Calculator() {
         break;
       case "operator":
         if (input === "=") {
-          if (operator === null || prevNumber === null) return;
-          const result = binaryOperate(
-            Number(prevNumber),
-            Number(number),
-            operator
-          );
-          setNumber(String(result));
-          setPrevNumber(String(result));
-          setInputPending(true);
-
-          setOperator(null);
+          if (operator && prevNumber) {
+            const result = binaryOperate(
+              Number(prevNumber),
+              Number(number),
+              operator
+            );
+            setNumber(String(result));
+            setPrevNumber(String(result));
+            setInputPending(true);
+            setOperator(null);
+          }
         } else {
-          // // 演算子[+, -, x, ÷]の場合
-          // if (operator && prevNumber) {
-          //   const result = binaryOperate(
-          //     Number(prevNumber),
-          //     Number(number),
-          //     operator
-          //   );
-          //   setNumber(String(result));
-          //   setPrevNumber(String(result));
-          // } else {
-          //   setPrevNumber(number);
-          // }
-          setPrevNumber(number);
+          // 連続計算の時
+          if (operator && prevNumber) {
+            const result = binaryOperate(
+              Number(prevNumber),
+              Number(number),
+              operator
+            );
+            setNumber(String(result));
+            setPrevNumber(String(result));
+          } else {
+            // 初めて演算子を押した時
+            setPrevNumber(number);
+          }
           setOperator(input);
           setInputPending(true);
         }
@@ -135,8 +135,8 @@ function Calculator() {
           onClick={(e) => handleButtonClick(e)}
         />
         <Button
-          label="×"
-          value="×"
+          label="x"
+          value="x"
           type="operator"
           onClick={(e) => handleButtonClick(e)}
         />
