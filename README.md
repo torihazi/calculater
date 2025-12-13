@@ -3,6 +3,10 @@
 - 四則演算
 - 連続計算(5 + 3 - 4 とかできる)
 
+動画
+https://github.com/torihazi/calculater/issues/6#issue-3725634675
+
+
 # 困ったこと
 
 電卓のそもそもの仕組み
