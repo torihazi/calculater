@@ -10,8 +10,8 @@ function Calculator() {
   const [prevNumber, setPrevNumber] = useState<string | null>(null);
   // 演算子
   const [operator, setOperator] = useState<string | null>(null);
-  // 値を上書きするフラグ
-  const [overwriteValue, setOverwriteValue] = useState<boolean>(false);
+  // 入力待ちフラグ
+  const [inputPending, setInputPending] = useState<boolean>(false);
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const input = e.currentTarget.value;
@@ -20,10 +20,14 @@ function Calculator() {
     switch (category) {
       case "number":
         setNumber((prev) => {
-          if (prev === "0") {
+          if (inputPending) {
+            setInputPending(false);
             return input;
+          } else if (prev === "0") {
+            return input;
+          } else {
+            return prev + input;
           }
-          return prev + input;
         });
         break;
       case "operator":
@@ -35,17 +39,45 @@ function Calculator() {
             operator
           );
           setNumber(String(result));
-          setPrevNumber(null);
+          setPrevNumber(String(result));
+          setInputPending(true);
+
           setOperator(null);
         } else {
-          // 演算子[+, -, x, ÷]の場合
-          setOperator(input);
+          // // 演算子[+, -, x, ÷]の場合
+          // if (operator && prevNumber) {
+          //   const result = binaryOperate(
+          //     Number(prevNumber),
+          //     Number(number),
+          //     operator
+          //   );
+          //   setNumber(String(result));
+          //   setPrevNumber(String(result));
+          // } else {
+          //   setPrevNumber(number);
+          // }
           setPrevNumber(number);
-          setNumber("0");
+          setOperator(input);
+          setInputPending(true);
         }
         break;
       case "function":
         // Functionの場合
+        if (input === "AC") {
+          setNumber("0");
+          setPrevNumber(null);
+          setOperator(null);
+          setInputPending(false);
+        } else if (input === "C") {
+          setNumber("0");
+          setInputPending(false);
+        } else if (input === "⌫") {
+          if (number.length === 1) {
+            setNumber("0");
+          } else {
+            setNumber(number.slice(0, -1));
+          }
+        }
         break;
       default:
       // ここには到達しない。その前にthrowされている
