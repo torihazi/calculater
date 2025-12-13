@@ -1,15 +1,17 @@
 import Display from "./Display";
 import Button from "./Button";
 import { useState } from "react";
-import { categorizeInputType } from "../lib/utils";
+import { binaryOperate, categorizeInputType } from "../lib/utils";
 
 function Calculator() {
   // 数字
   const [number, setNumber] = useState<string>("0");
   // 前の数字
-  const [prevNumber, setPrevNumber] = useState<string>("");
+  const [prevNumber, setPrevNumber] = useState<string | null>(null);
   // 演算子
-  const [operator, setOperator] = useState<string>("");
+  const [operator, setOperator] = useState<string | null>(null);
+  // 値を上書きするフラグ
+  const [overwriteValue, setOverwriteValue] = useState<boolean>(false);
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const input = e.currentTarget.value;
@@ -17,7 +19,6 @@ function Calculator() {
 
     switch (category) {
       case "number":
-        // 数字の場合
         setNumber((prev) => {
           if (prev === "0") {
             return input;
@@ -26,13 +27,25 @@ function Calculator() {
         });
         break;
       case "operator":
-        // 演算子の場合
+        if (input === "=") {
+          if (operator === null || prevNumber === null) return;
+          const result = binaryOperate(
+            Number(prevNumber),
+            Number(number),
+            operator
+          );
+          setNumber(String(result));
+          setPrevNumber(null);
+          setOperator(null);
+        } else {
+          // 演算子[+, -, x, ÷]の場合
+          setOperator(input);
+          setPrevNumber(number);
+          setNumber("0");
+        }
         break;
       case "function":
         // Functionの場合
-        break;
-      case "equals":
-        // 等号の場合
         break;
       default:
       // ここには到達しない。その前にthrowされている
