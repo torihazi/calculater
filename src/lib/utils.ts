@@ -1,3 +1,5 @@
+import { OPERATOR, NUMBER, FUNCTION } from "../constant";
+
 /**
  * 二項演算用
  * @param number
@@ -37,5 +39,22 @@ export const unaryOperate = (value: number, operator: string): number => {
       return value / 100;
     default:
       throw new Error(`Unsupported operator: ${operator}`);
+  }
+};
+
+/**
+ * 電卓から入力された文字列に応じて、演算子 or 数字 or Functionかを返す
+ * @param input 入力された文字列
+ * @return string 固定の文字列を返す
+ */
+export const categorizeInputType = (input: string): string => {
+  if (OPERATOR.includes(input)) {
+    return "operator";
+  } else if (NUMBER.includes(input)) {
+    return "number";
+  } else if (FUNCTION.includes(input)) {
+    return "function";
+  } else {
+    return "unknown";
   }
 };
