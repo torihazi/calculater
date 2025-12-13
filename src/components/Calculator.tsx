@@ -3,7 +3,7 @@ import Button from "./Button";
 import { useState } from "react";
 
 // 演算子定数
-const OPERATOR = ["+", "-", "*", "÷", "%"];
+const OPERATOR = ["+", "-", "*", "÷", "%", "="];
 // 数字
 const NUMBER = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 // Function
@@ -26,6 +26,34 @@ const categorizeInputType = (input: string): string => {
   }
 };
 
+/**
+ * 2つの値を演算子をもとに計算する
+ * @param number
+ * @param number
+ * @param string operator
+ * @returns number
+ */
+const calculateNum = (
+  num: number,
+  prevNum: number,
+  operator: string
+): number => {
+  switch (operator) {
+    case "+":
+      return prevNum + num;
+    case "-":
+      return prevNum - num;
+    case "x":
+      return prevNum * num;
+    case "÷":
+      return prevNum / num;
+    case "%":
+      return num / 100;
+    default:
+      return 0;
+  }
+};
+
 function Calculator() {
   // 数字
   const [number, setNumber] = useState<string>("0");
@@ -40,12 +68,24 @@ function Calculator() {
     // inputのtypeに応じて操作を分けたい
     // 数字であるならばsetNumberを使って処理をする
     // 演算子であるならそれを保存する
+
+    // 1 =>
     const category = categorizeInputType(input);
     switch (category) {
       case "operator":
-        setOperator(input);
-        setPrevNumber(number);
-        setNumber("0");
+        // 前の状態に参照するために setStateの中で
+        setOperator((prev) => {
+          if (input === "=") {
+            const current = Number(number);
+            const prevNum = Number(prevNumber);
+            const result = calculateNum(current, prevNum, input);
+            setNumber(String(result));
+            setPrevNumber(String(result));
+          }
+          setPrevNumber(number);
+          setNumber("0");
+          return input;
+        });
         break;
       case "number":
         setNumber((prev) => {
