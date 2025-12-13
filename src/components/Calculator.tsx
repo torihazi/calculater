@@ -1,62 +1,86 @@
 import Display from "./Display";
 import Button from "./Button";
 import { useState } from "react";
-
-// 演算子定数
-const OPERATOR = ["+", "-", "*", "÷", "%"];
-// 数字
-const NUMBER = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-// Function
-const FUNCTION = ["AC", "C", "⌫"];
-
-/**
- * 電卓から入力された文字列に応じて、演算子 or 数字 or Functionかを返す
- * @param input 入力された文字列
- * @return string 固定の文字列を返す
- */
-const categorizeInputType = (input: string): string => {
-  if (OPERATOR.includes(input)) {
-    return "operator";
-  } else if (NUMBER.includes(input)) {
-    return "number";
-  } else if (FUNCTION.includes(input)) {
-    return "function";
-  } else {
-    return "unknown";
-  }
-};
+import { binaryOperate, categorizeInputType } from "../lib/utils";
 
 function Calculator() {
   // 数字
   const [number, setNumber] = useState<string>("0");
   // 前の数字
-  const [prevNumber, setPrevNumber] = useState<string>("");
+  const [prevNumber, setPrevNumber] = useState<string | null>(null);
   // 演算子
-  const [operator, setOperator] = useState<string>("");
+  const [operator, setOperator] = useState<string | null>(null);
+  // 入力待ちフラグ
+  const [inputPending, setInputPending] = useState<boolean>(false);
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const input = e.currentTarget.value;
-
-    // inputのtypeに応じて操作を分けたい
-    // 数字であるならばsetNumberを使って処理をする
-    // 演算子であるならそれを保存する
     const category = categorizeInputType(input);
+
     switch (category) {
-      case "operator":
-        setOperator(input);
-        setPrevNumber(number);
-        setNumber("0");
-        break;
       case "number":
         setNumber((prev) => {
-          if (prev === "0") {
+          if (inputPending) {
+            setInputPending(false);
             return input;
+          } else if (prev === "0") {
+            return input;
+          } else {
+            return prev + input;
           }
-          return prev + input;
         });
         break;
+      case "operator":
+        if (input === "=") {
+          if (operator && prevNumber) {
+            const result = binaryOperate(
+              Number(prevNumber),
+              Number(number),
+              operator
+            );
+            setNumber(String(result));
+            setPrevNumber(String(result));
+            setInputPending(true);
+            setOperator(null);
+          }
+        } else {
+          // 連続計算の時
+          if (operator && prevNumber) {
+            const result = binaryOperate(
+              Number(prevNumber),
+              Number(number),
+              operator
+            );
+            setNumber(String(result));
+            setPrevNumber(String(result));
+          } else {
+            // 初めて演算子を押した時
+            setPrevNumber(number);
+          }
+          setOperator(input);
+          setInputPending(true);
+        }
+        break;
+      case "function":
+        // Functionの場合
+        if (input === "AC") {
+          setNumber("0");
+          setPrevNumber(null);
+          setOperator(null);
+          setInputPending(false);
+        } else if (input === "C") {
+          setNumber("0");
+          setInputPending(false);
+        } else if (input === "⌫") {
+          if (number.length === 1) {
+            setNumber("0");
+          } else {
+            setNumber(number.slice(0, -1));
+          }
+        }
+        break;
       default:
-        console.error("unsupported Input");
+      // ここには到達しない。その前にthrowされている
     }
   };
 
@@ -111,8 +135,8 @@ function Calculator() {
           onClick={(e) => handleButtonClick(e)}
         />
         <Button
-          label="×"
-          value="×"
+          label="x"
+          value="x"
           type="operator"
           onClick={(e) => handleButtonClick(e)}
         />
