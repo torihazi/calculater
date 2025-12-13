@@ -1,13 +1,21 @@
 interface ButtonProps {
   label: string;
-  onClick?: () => void;
+  value: string;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
   type?: "number" | "operator" | "function" | "equals";
 }
 
-function Button({ label, onClick, className = "", type = "number" }: ButtonProps) {
-  const baseStyles = "text-2xl font-medium rounded-lg transition-all active:scale-95";
-  
+function Button({
+  label,
+  value,
+  onClick,
+  className = "",
+  type = "number",
+}: ButtonProps) {
+  const baseStyles =
+    "text-2xl font-medium rounded-lg transition-all active:scale-95";
+
   const typeStyles = {
     number: "bg-gray-700 hover:bg-gray-600 text-white",
     operator: "bg-orange-500 hover:bg-orange-600 text-white",
@@ -17,6 +25,7 @@ function Button({ label, onClick, className = "", type = "number" }: ButtonProps
 
   return (
     <button
+      value={value}
       onClick={onClick}
       className={`${baseStyles} ${typeStyles[type]} ${className}`}
     >
@@ -26,4 +35,3 @@ function Button({ label, onClick, className = "", type = "number" }: ButtonProps
 }
 
 export default Button;
-
