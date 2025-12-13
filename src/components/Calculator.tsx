@@ -27,30 +27,42 @@ const categorizeInputType = (input: string): string => {
 };
 
 /**
- * 2つの値を演算子をもとに計算する
+ * 二項演算用
  * @param number
  * @param number
  * @param string operator
  * @returns number
  */
-const calculateNum = (
-  num: number,
-  prevNum: number,
+const binaryOperate = (
+  left: number,
+  right: number,
   operator: string
 ): number => {
   switch (operator) {
     case "+":
-      return prevNum + num;
+      return left + right;
     case "-":
-      return prevNum - num;
+      return left - right;
     case "x":
-      return prevNum * num;
+      return left * right;
     case "÷":
-      return prevNum / num;
-    case "%":
-      return num / 100;
+      return left / right;
     default:
-      return 0;
+      throw new Error(`Unsupported operator: ${operator}`);
+  }
+};
+
+/**
+ * 単項演算
+ * @param number
+ * @returns number
+ */
+const unaryOperate = (value: number, operator: string): number => {
+  switch (operator) {
+    case "%":
+      return value / 100;
+    default:
+      throw new Error(`Unsupported operator: ${operator}`);
   }
 };
 
